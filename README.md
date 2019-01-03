@@ -25,7 +25,8 @@ Futher experimentation was done to find the variance in the *X*-*Y* axis. In thi
 ![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/diffuser_circle.png)
 *Figure 3, Figure 3 shows the random variance of the light due to the diffuser plate* 
 
-
+### Conclusion
+The model provides a powerful method for validating the uniformity of the light and builds on the hypothisis that a diffuser would be needed to provide a uniform light source. Futhermore it shows that reducing the distance between the diffuser and LED is benifital. This suggests that wider angle LEDs would also be benifital to reducing varation of light intensity.
 
 ### bibliography
 

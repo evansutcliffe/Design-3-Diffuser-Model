@@ -17,8 +17,7 @@ For testing the variance of light with the distance between the LEDs and the mod
 ![Figure 1](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
 *Figure 1, Figure 1 shows the variance of the light with distance between the diffuser and the wafer* 
 
-Futher experimentation was done to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays and these were then binned and plotted in a 2D histogram. Figure 3 and 4 show the variation with and without a diffuser present 
-
+Futher experimentation was done to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays and these were then binned and plotted in a 2D histogram. Figure 3 and 4 show the variation with and without a diffuser present. As can be seen, the light forms a regular pattern without the diffuers but with the diffuser varation is dominated by random noise. The Red circle in both images shows the area of intrest as this is the maxmium size of the wafer. As it can be seen the edge reigon of the image has a reduced intensity however due to this they can be discarded in the variation calculation. 
 
 ![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/no_diffuser_circle.png)
 *Figure 2, Figure 3 shows the regular pattern of light intensity due to the layout of the LED grid* 

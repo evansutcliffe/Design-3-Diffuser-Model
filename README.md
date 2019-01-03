@@ -1,6 +1,5 @@
 # Design-3-Diffuser-Model
-
-# Numerical modelling of optical diffuser
+Numerical modelling of optical diffuser
 
 # Introduction
 
@@ -15,6 +14,16 @@ In this project light was modelled using a Monte Carlo simulation where light ra
 # Results
 
 For testing the variance of light with the distance between the LEDs and the model was repeated for a distances from 5-100mm. This was modelled without a diffuser and only used the varience in the *X* dimension as the model was assumed to be fully symetrical. This found that the light which was most uniform (lowest variation) was at around 35mm. This verifies the experimental data from other sources which found similar results[3]. Futher tests were done where the distance between the diffuser and LEDs. It was found that to minmise variance this distance should be reduced. 
+![Figure 1](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
+*Figure 1, Figure 1 shows the variance of the light with distance between the diffuser and the wafer* 
+
+
+![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
+*Figure 2, Figure 3 shows the variance of the light with distance between the diffuser and the wafer* 
+
+![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
+*Figure 3, Figure 3 shows the variance of the light with distance between the diffuser and the wafer* 
+
 
 
 # bibliography

@@ -19,12 +19,12 @@ For testing the variance of light with the distance between the LEDs and the mod
 
 *Figure 1, Figure 1 shows the variance of the light with distance between the diffuser and the wafer* 
 
-The model was used to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays, and these were then binned and plotted in a 2D histogram. Figure 3 and 4 show the variation with and without a diffuser present. As can be seen, the light forms a regular pattern without the diffusers but with the diffuser variation is dominated by random noise. The Red circle in both images shows the area of interest as this is the maximum size of the wafer. As it can be seen the edge region of the image has a reduced intensity however due to this they can be discarded in the variation calculation. 
+The model was used to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays, and these were then binned and plotted in a 2D histogram. Figure 3 and 4 show the variation with and without a diffuser present. As can be seen, the light forms a regular pattern without the diffusers but with the diffuser variation is dominated by random noise. The Red circle in both images shows the area of interest as this is the maximum size of the wafer. As it can be seen the edge region of the image has a reduced intensity however due to this they can be discarded in the variation calculation. The distribution of the angle of the light rays is shown on the right hand side of Figure 2 and 3. This shows that for both systems there is a significant range of light angle.
 
-![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/no_diffuser_circle.png)
+![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/no%20diffuser.png)
 *Figure 2, Figure 3 shows the regular pattern of light intensity due to the layout of the LED grid* 
 
-![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/diffuser_circle.png)
+![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/diffuser.png)
 *Figure 3, Figure 3 shows the random variance of the light due to the diffuser plate* 
 
 ### Conclusion

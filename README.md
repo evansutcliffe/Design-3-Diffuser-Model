@@ -16,6 +16,7 @@ In this project light was modelled using a Monte Carlo simulation where light ra
 For testing the variance of light with the distance between the LEDs and the model was repeated for distances from 5-100mm. This was modelled without a diffuser and only used the variance in the *X* dimension as the model was assumed to be fully symmetrical. This found that the light which was most uniform (lowest variation) was at around 35mm. This verifies the experimental data from other sources which found similar results[3]. Further tests were done where the distance between the diffuser and LEDs. It was found that to minimise variance this distance should be reduced. 
 
 ![Figure 1](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
+
 *Figure 1, Figure 1 shows the variance of the light with distance between the diffuser and the wafer* 
 
 The model was used to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays, and these were then binned and plotted in a 2D histogram. Figure 3 and 4 show the variation with and without a diffuser present. As can be seen, the light forms a regular pattern without the diffusers but with the diffuser variation is dominated by random noise. The Red circle in both images shows the area of interest as this is the maximum size of the wafer. As it can be seen the edge region of the image has a reduced intensity however due to this they can be discarded in the variation calculation. 

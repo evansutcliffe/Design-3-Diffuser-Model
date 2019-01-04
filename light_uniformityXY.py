@@ -7,8 +7,7 @@ Created on Fri Dec 14 11:36:22 2018
 
 import numpy as np 
 import matplotlib.pyplot as plt
-from scipy.stats import kde
-from matplotlib.patches import Ellipse
+
  
 
 
@@ -23,13 +22,14 @@ height = 35 # distance between LEDs and wafer
 LED_intensity = 40 #  mw per LED
 transmission = 0.6 # diffuser transmission
 LED_angle = 30 # angle of LED beam (assumed 2 sd) 
-use_diffuser = 1
+diffuser_angle = 30 # angle of diffuser (assumed 2 sd) 
+use_diffuser = 0
 intensity = 1
 ##
 
 ## simulation parameters
 rep =1000 # light rays per LED
-nbins = 1000 # bins for charts
+nbins = 100 # bins for charts
 histbin = 100 #bins for histogram
 ##
 
@@ -39,35 +39,43 @@ cood_diffuser =[]
 cood_wafer =[]
 angle =[]
 
-mu, sigma = 0, LED_angle/2*(np.pi/180) # mean and standard deviation
 
 
 if (use_diffuser):
     distance = height
-    print("calcuating diffuser")
+    print("calcuating diffuser scatter")
 else:
     distance = L
-    print("calcuating wafer")
+    print("calcuating light wafer intensity")
+  
+    
+mu, sigma = 0, LED_angle/2*(np.pi/180) # mean and standard deviation
 for LED in cood_xy:
-    x,y = LED[0],LED[1]
+    x,y = LED[0],LED[1] # xy coordinates in a topdown view
     thetax = np.random.normal(mu, sigma, rep)
-    x = x + L*(np.tan(thetax))
+    x = x + distance*(np.tan(thetax))
     thetay = np.random.normal(mu, sigma, rep)
-    y =y+ L*(np.tan(thetay))
+    y =y + distance*(np.tan(thetay))
     for i in range(rep):
         if (x[i]>0 and x[i] < length and (y[i]>0 and y[i] < width)):
-            cood_diffuser.append((x[i],y[i],thetax[i],thetay[i]))
-mu, sigma = 0, LED_angle/2*(np.pi/180) # change to T- dist ?    
+            cood_diffuser.append((x[i],y[i],thetax[i],thetay[i])) 
+            a = np.sqrt((thetay[i])*(thetay[i])+(thetax[i])*(thetax[i]))
+            angle.append(a*180/np.pi)
+            # if light ray outside of diffuser/wafer boundary then disgard
+            
+            
 if (use_diffuser):
-    L = height -L;     
-    print("calcuating wafer")
-    random_theta = np.random.normal(mu, sigma, len(cood_diffuser)*2)
+    print("calcuating light wafer intensity (for diffuser)")
+    angle=[]
+    distance = height - L;     
+    mu, sigma = 0, diffuser_angle/2*(np.pi/180) # assumed normal distribution of light?
+    random_theta = np.random.normal(mu, sigma, len(cood_diffuser)*2) # random values for x,y
     for i in range(len(cood_diffuser)):
         (x, y, thetax,thetay), dtx, dty  = cood_diffuser[i], random_theta[i], random_theta[i+len(cood_diffuser)]
-        x= x+ height*(np.tan(thetax+dtx))
-        y = y+ height*(np.tan(thetay+dty))
+        x = x + distance*(np.tan(thetax+dtx))
+        y = y + distance*(np.tan(thetay+dty))
         a = np.sqrt((thetay+dty)*(thetay+dty)+(thetax+dtx)*(thetax+dtx))
-        if (x>0 and x < length and (y>0 and +y < width)):
+        if (x>0 and x < length and (y>0 and y < width)):
             cood_wafer.append((x,y))
             angle.append(a*180/np.pi)
 
@@ -82,54 +90,17 @@ if (intensity):
     print(len(cood_wafer))
 print("plotting")
 if (use_diffuser):
-    x,y = zip(*light_ray_list)
+    x,y = zip(*cood_wafer)
 else:
-    x, y, thetax,thetay = zip(*light_ray_list)
+    x, y, thetax,thetay = zip(*cood_diffuser) 
 x = np.array(x)
 y = np.array(y)
-# Create a figure with 6 plot areas
-fig, axes = plt.subplots(ncols=4, nrows=1, figsize=(21, 5))
-circle1 = plt.Circle((89, 89), 76.2, color='red',fill=False)
-circle2 = plt.Circle((89, 89), 76.2, color='red',fill=False)
-circle3 = plt.Circle((89, 89), 76.2, color='red',fill=False) 
-
-# Thus we can cut the plotting window in several hexbins
-
+# Create a figure with 2 plot areas
+fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
+circle1 = plt.Circle((89, 89), 76.2, color='red',fill=False,linewidth=4.0)
 
 axes[0].set_title('2D Histogram')
 axes[0].hist2d(x, y, bins=nbins, cmap=plt.cm.BuGn_r)
-
 axes[0].add_artist(circle1)
 
-#axes[1].set_title('2D Histogram')
-#x1,y1 = zip(*light_ray_list)
-#
-#axes[1].hist2d(np.array(x1), np.array(y1), bins=nbins, cmap=plt.cm.BuGn_r)
-#axes[0].add_artist(circle1)
-
-
-  
-## Evaluate a gaussian kde on a regular grid of nbins x nbins over data extents
-#k = kde.gaussian_kde((x,y))
-#xi, yi = np.mgrid[x.min():x.max():nbins*1j, y.min():y.max():nbins*1j]
-#zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-# 
-## plot a density
-#axes[1].set_title('Calculate Gaussian KDE')
-#axes[1].pcolormesh(xi, yi, zi.reshape(xi.shape), cmap=plt.cm.BuGn_r)
-#axes[1].add_artist(circle2)
-# 
-#
-#axes[2].set_title('Contour')
-#axes[2].pcolormesh(xi, yi, zi.reshape(xi.shape), shading='gouraud', cmap=plt.cm.BuGn_r)
-#axes[2].contour(xi, yi, zi.reshape(xi.shape) )
-#axes[2].add_artist(circle3)
-
-axes[3].hist(np.array(angle), bins=histbin)
-
-
-
-
-  
-  
-  
+axes[1].hist(np.array(angle), bins=histbin)

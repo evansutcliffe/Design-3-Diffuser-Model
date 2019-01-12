@@ -23,8 +23,10 @@ LED_intensity = 40 #  mw per LED
 transmission = 0.6 # diffuser transmission
 LED_angle = 30 # angle of LED beam (assumed 2 sd) 
 diffuser_angle = 30 # angle of diffuser (assumed 2 sd) 
-use_diffuser = 0
+max_allowable_angle=10 # degrees, max allowable optical angle
+use_diffuser = 1
 intensity = 1
+use_angle_filter=0 # calculate the final intensity after using a optical angle filter
 ##
 
 ## simulation parameters
@@ -84,10 +86,20 @@ if (intensity):
     for x,y in cood_wafer:
         if ((x-89)*(x-89)+(y-89)*(y-89)<(76.2*76.2)):
             light_ray_list.append((x,y))
-    light_ray_intensity = LED_intensity/rep
-    print(len(light_ray_list)*light_ray_intensity*transmission/(7.62*7.62))
-    print(len(light_ray_list))
-    print(len(cood_wafer))
+            ray_count=len(light_ray_list)
+    if(use_diffuser):
+        losses=transmission
+    else:
+        losses=1  
+    parallel_angle =[]
+    if(use_angle_filter):
+        for a in angle:
+            if(a<max_allowable_angle):    
+                parallel_angle.append(a)
+        angle=parallel_angle
+        ray_count=len(angle)
+    light_ray_intensity = (LED_intensity/rep)*ray_count*losses/(np.pi*(7.62*7.62)) 
+    print(light_ray_intensity,'mw/cm^2')
 print("plotting")
 if (use_diffuser):
     x,y = zip(*cood_wafer)
@@ -99,8 +111,10 @@ y = np.array(y)
 fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
 circle1 = plt.Circle((89, 89), 76.2, color='red',fill=False,linewidth=4.0)
 
+
 axes[0].set_title('2D Histogram')
 axes[0].hist2d(x, y, bins=nbins, cmap=plt.cm.BuGn_r)
+
 axes[0].add_artist(circle1)
 
 axes[1].hist(np.array(angle), bins=histbin)

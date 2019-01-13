@@ -21,7 +21,7 @@ For testing the variance of light with the distance the simulation was repeat fo
 
 The model was used to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays, and these were then binned and plotted in a 2D histogram. Figure 2 shows the variation without a diffuser present. As can be seen, the light forms a regular pattern without the diffusers but with the diffuser variation is dominated by random noise. The Red circle in both images shows the area of interest as this is the maximum size of the wafer. As it can be seen the edge region of the image has a reduced intensity however due to this, they can be discarded in the variation calculation. The distribution of the angle of the light rays is shown on the right hand side of the figure. Figure 3 is a repeat of the simulation but with a diffuser placed 5mm from the LED light source. In this model random noise dominates the distribution of the light and is more uniform This shows that for both systems there is a significant range of light angle. 
 
-Finally, the light intensity on the wafer was found. The calculations show that with 256 LEDs the intensity is 16.2 mw/cm<sup>2 . This means that this setup can meet the specification for light intensity without the use of a focusing lens
+Finally, the light intensity on the wafer was found. The calculations show that with 256 LEDs the intensity is 16.2 mw/cm<sup>2</sup> . This means that this setup can meet the specification for light intensity without the use of a focusing lens
 ![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/no%20diffuser.png)
 *Figure 2, Figure 2 shows the regular pattern of light intensity due to the layout of the LED grid* 
 

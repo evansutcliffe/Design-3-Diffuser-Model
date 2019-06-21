@@ -10,42 +10,38 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from scipy import stats
 
- 
+# top down view of intensity on a wafer
+# input distance and other variables
 
 
 
 ## variables you can change 
-x=16*16 # number of LEDs # hard coded for 16 by 16 # unused
-spaceing = np.round(np.sqrt(x)) # unused 
 LightW,LightL= 178, 178 # size of lightsource 
 width,length = 178, 178 # size of mask 
 L = 1 # distance between LED and diffuser
-height = 10 # distance between LEDs and wafer
+height = 50 # distance between LEDs and wafer
 LED_intensity = 40 #  mw per LED
 transmission = 0.6 # diffuser transmission
 LED_angle = 30 # angle of LED beam (assumed 2 sd) 
 diffuser_angle = 30 # angle of diffuser (assumed 2 sd) 
-max_allowable_angle=10 # degrees, max allowable optical angle
+max_allowable_angle=(10*np.pi/180) # degrees, max allowable optical angle
 
-use_diffuser = 0
+use_diffuser = 1
 intensity = 0
-use_angle_filter=0 # calculate the final intensity after using a optical angle filter
+use_angle_filter= 0# calculate the final intensity after using a optical angle filter
 plot=1
 ##
 
 ## simulation parameters
-rep =1000 # light rays per LED
+rep =10000 # light rays per LED
 nbins = 1000 # bins for 2d hist
-histbin = 10 #bins for angle hist
+histbin = 1000 #bins for angle hist
 ##
 
 
-cood_xy = np.mgrid[0:LightW:16j, 0:LightL:16j].reshape(2,-1).T #hardcoded for 16 x 16
+cood_xy = np.mgrid[0:LightW:16j, 0:LightL:16j].reshape(2,-1).T #hardcoded for 16 x 16 LED grid
 cood_diffuser =[]
 cood_wafer =[]
-angle =[]
-
-
 
 if (use_diffuser):
     distance = L
@@ -65,26 +61,19 @@ for LED in cood_xy:
     for i in range(rep):
         if (x[i]>0 and x[i] < length and (y[i]>0 and y[i] < width)):
             cood_diffuser.append((x[i],y[i],thetax[i],thetay[i])) 
-            a = np.sqrt((thetay[i])*(thetay[i])+(thetax[i])*(thetax[i]))
-            angle.append(a*180/np.pi)
             # if light ray outside of diffuser/wafer boundary then disgard
                            
 if (use_diffuser):
     angle=[]
-    test=[]
     distance = height - L;     
     mu, sigma = 0, diffuser_angle/2*(np.pi/180) # assumed normal distribution of light?
     random_theta = np.random.normal(mu, sigma, len(cood_diffuser)*2) # random values for x,y
     for i in range(len(cood_diffuser)):
         (x, y, thetax,thetay), dtx, dty  = cood_diffuser[i], random_theta[i], random_theta[i+len(cood_diffuser)]
         x = x + distance*(np.tan(thetax+dtx))
-        y = y + distance*(np.tan(thetay+dty))
-        a = np.sqrt((thetay+dty)*(thetay+dty)+(thetax+dtx)*(thetax+dtx))
-        
+        y = y + distance*(np.tan(thetay+dty))        
         if (x>0 and x < length and (y>0 and y < width)):
-            cood_wafer.append((x,y))
-            test.append(((thetay+dty),(thetax+dtx)))
-            angle.append(a*180/np.pi)
+            cood_wafer.append((x,y,(thetax+dtx),(thetay+dty)))
         
 if (intensity):
     print("calcuating light wafer intensity (for diffuser)")
@@ -93,23 +82,25 @@ if (intensity):
     if (use_diffuser):
         wafer = cood_wafer
     else:
-        x, y, thetax,thetay = zip(*cood_diffuser) 
-        wafer = zip(x,y)
-    for x,y in wafer:
+        wafer = cood_diffuser
+
+        print("")
+    ray_list=0
+    angle_count=0
+    for x,y,thetax,thetay in wafer:
         if ((x-89)*(x-89)+(y-89)*(y-89)<(76.2*76.2)):
-            light_ray_list.append((x,y))
-        ray_count=len(light_ray_list)
+            ray_list=ray_list+1
+            if(use_angle_filter and (thetax <max_allowable_angle) and (thetay < max_allowable_angle)):
+                angle_count=angle_count+1
     if(use_diffuser):
         losses=transmission
     else:
         losses=1  
-    parallel_angle =[]
-    if(use_angle_filter):
-        for a in angle:
-            if(a<max_allowable_angle):    
-                parallel_angle.append(a)
-        angle=parallel_angle
-        ray_count=len(angle)
+    if (use_angle_filter):
+        ray_count=angle_count
+    else:
+        ray_count=ray_list
+
     light_ray_intensity = (LED_intensity/rep)*ray_count*losses/(np.pi*(7.62*7.62)) 
     print(light_ray_intensity,'mw/cm^2')
     
@@ -129,29 +120,30 @@ if (intensity):
     
 
 if (use_diffuser):
-    x,y = zip(*cood_wafer)
+    x,y,thetax,thetay = zip(*cood_wafer)
+    
 else:
     x, y, thetax,thetay = zip(*cood_diffuser) 
     
-    
 x = np.array(x)
 y = np.array(y)
+ax = np.array(thetax)*180/np.pi
+ay = np.array(thetay)*180/np.pi
 
-ax,ay = zip(*test)
-ax = np.array(ax)*180/np.pi
-ay = np.array(ay)*180/np.pi
-
-print("calculating uniformity")
-
-## Uniformity tests
-
-x1 = x[x < 153]
-x1 =x1[x1 > 25]
-   
-k=np.histogram(x1,bins=100)
-print((np.max(k[0])-np.mean((k[0])))/np.mean(k[0])*100)
-std = np.std(k[0])/np.mean(k[0])
+if (1):  
     
+    print("calculating uniformity")
+    
+    ## Uniformity tests
+    
+    x1 = x[x < 153] # take subset inside circle 
+    x1 =x1[x1 > 25]
+       
+    k=np.histogram(x1,bins=100)
+    sd_error=((np.max(k[0])-np.mean((k[0])))/np.mean(k[0])*100) # standard error
+    print("Standard Error = {} ".format(round(sd_error, 4)))
+    std = np.std(k[0])/np.mean(k[0])
+        
 
 ##
    
@@ -181,15 +173,16 @@ if (plot):
     axes[1].set_ylabel("Relative Intensity")
     axes[1].set_xlabel("Angle ($\degree$)")
     
-    plt.figure(figsize=(16,10))
-    #plt.hist(x1, bins=100)
-    plt.hist2d(ax, ay, bins=nbins, cmap=plt.cm.BuGn_r)
-    #print(stats.kstest(x, stats.uniform(loc=0.0, scale=178).cdf))
-    plt.xlabel('X Angle ($\degree$)')
-    plt.ylabel('Y Angle $\degree$')
-    plt.grid(True)
-    plt.axis((-75,75,-75,75))
-    plt.colorbar()
+    
+#    plt.figure(figsize=(16,10))
+#    #plt.hist(x1, bins=100)
+#    plt.hist2d(ax, ay, bins=nbins, cmap=plt.cm.BuGn_r)
+#    #print(stats.kstest(x, stats.uniform(loc=0.0, scale=178).cdf))
+#    plt.xlabel('X Angle ($\degree$)')
+#    plt.ylabel('Y Angle $\degree$')
+#    plt.grid(True)
+#    plt.axis((-75,75,-75,75))
+#    plt.colorbar()
     
 
 

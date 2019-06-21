@@ -10,17 +10,20 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy import stats
 
-x= 256 # number of LEDs
-width,length = 178, 178
-rep =1000
+#Change of Coefficent of varience with distance (diffuser at point of light source)
+# blue shows whole dataset
+# green shows  subset inside the circle (where the wafer should be)
 
-xy = np.mgrid[0:width:30j, 0:length:30j].reshape(2,-1).T
-d_list =[]
-d_list1 =[]
-mu, sigma = 0, 15/2*(np.pi/180) # mean and standard deviation
- # for single dim
-ran = range(10,150,5)
-for L in ran: 
+width,length = 178, 178
+xy = np.mgrid[0:width:16j, 0:length:16j].reshape(2,-1).T
+mu, sigma = 0, 15*np.sqrt(2)*(np.pi/180) # mean and standard deviation (for LEDs and diffuser )
+# this model assumes diffuser is at point of light source
+# NOTE CHANGED SINCE REPORT SIGMA OF NORMAL DIST SHOULD BE SQRT(2)*15 (not 2*15 used in report)
+rep =1000 
+d_list=[]
+d_list1=[]
+ran = range(5,150,1)
+for L in ran:
     diffuserx=[]
     diffusertheta=[]
     for LED in xy:
@@ -34,6 +37,8 @@ for L in ran:
     x=np.array(diffuserx)
     x1 = x[x > 25]
     x1 =x1[x1 < 153]
+
+    # for single dim
     k=np.histogram(x1,bins=100)
     counts=k[0]
     std = np.std(counts/np.mean(counts))
@@ -56,8 +61,8 @@ font = {'family' : 'normal',
 plt.plot(ran,d_list/max(d_list),color='darkgreen')
 plt.plot(ran,d_list1/max(d_list),color='blue')
 #plt.plot((d_list/max(d_list)))
-plt.xlabel('Z Distance ($mm$)')
-plt.ylabel('Normalised coefficient of variation $C_v$')
+plt.xlabel('$Z$ Distance ($mm$)')
+plt.ylabel('Normalised Coefficient of Variation $C_v$')
 plt.grid(True)
 #plt.axis((0,150,0,1))
 plt.show()

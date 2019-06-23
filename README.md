@@ -1,32 +1,62 @@
 # Design-3-Diffuser-Model
-Numerical modelling of optical diffuser
+Ray Tracing model for of an optical diffuser for photolithography
 
 ### Introduction
 
 In photolithography a silicon wafer has a pattern etched onto it using a optical mask and UV light source. 
-previous devices have used a ellipsoidal mirrors and collimating lenses to produce a parallel source of light however it was 
-theorised that it would be cheaper to use a distributed light source such as an array of LEDs. Modelling was done to test the uniformity of the light with and without an optical diffuser with the aim of having the most uniform light intensity over the wafer. Furthermore, tests were done to find the ideal distance between the light source and the wafer.
+Previous devices have used a ellipsoidal mirrors and collimating lenses to produce a parallel source of light. However, it was theorised that it would be cheaper to use a distributed light source such as an array of LEDs. Modelling was done to test the uniformity of the light with and without an optical diffuser with the aim of having the most uniform light intensity over the wafer. Furthermore, tests were done to find the ideal distance between the light source and the wafer.
 
 ### Technique
 
-In this project light was modelled using a Monte Carlo simulation where light rays were discrete particles. These partials are sourced from the LED locations. Partials are assigned an initial deflection angle from a normal distribution with the standard deviation and mean taken from the LED datasheet [1]. When interacting with the diffuser the partials are redirected by a random angle taken from a normal distribution based on the diffuser data sheet[2]. The output results were the *X*-*Y* coordinates and the angle of the light particles. Due to the size of the model assumptions can be made about the underlying distribution of the continuous light source from the discrete particle locations. Transmission losses for the diffuser were neglected as only the variation was relevant.
+The project used a form of ray tracing where light rays were modelled as discrete particles. These partials were sourced from the LED locations. Partials are assigned an initial deflection angle from a normal distribution with the standard deviation and mean taken from the LED datasheet [1]. When interacting with the diffuser the partials are redirected by a random angle taken from a normal distribution based on the diffuser data sheet[2]. The output results were the *xy* coordinates and the angle of the light particles. Due to the size of the model assumptions can be made about the underlying distribution of the continuous light source from the discrete particle locations. Transmission losses for the diffuser were neglected as only the variation was relevant.
 
-### Results
+### 2D model results 
 
-For testing the variance of light with the distance the simulation was repeat for distances between the LEDs and the wafer of 5-100mm. This was modelled without a diffuser and only used the variance in the *X* dimension as the model was assumed to be fully symmetrical. This found that the light which was most uniform (lowest variation) was at around 35mm. This verifies the experimental data from other sources which found similar results[3]. Further tests were done where the distance between the diffuser and LEDs. It was found that to minimise variance this distance should be reduced. 
+The model was used to find the uniformity in the $xy$ plane. The light rays were sourced from the
+LEDs and their location on the wafer was recorded. For these plots approximately 2.5×10<sup>7</sup> data
+points were binned and plotted in a 2D histogram. Figure 38 shows the spread on a wafer at 10mm
+displacement. As can be seen, the light forms a regular intensity pattern. The red circle shows the
+area of interest as this is the diameter of the largest wafer. At this distance the model was tested
+with a diffuser and improved the uniformity from 83% to 43%
 
-![Figure 1](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/distance%20calc.png)
+![Figure 1](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/ES10!D.png)
+*Figure 1, 2D Light Intensity Plot.* 
 
-*Figure 1, Figure 1 shows the variance of the light with distance between the diffuser and the wafer* 
+Figure 2 is a repeat of the simulation but with the wafer placed 50mm from the LED UV source. The
+system shows only random noise due to the simulation model and an underlying uniform distribution.
+The edge region of the image has a reduced intensity due to the scattering of light to outside the
+area plotted. However, as this is outside the area of interest it is not significant. It was found that a diffuser had a small negative impact on the uniformity at this distance. It was theorised that this
+is due to the increased distribution range increasing the boundary effect and reducing the intensity
+at the edge of the area of interest. Therefore, it was decided to not use a diffuser.
 
-The model was used to find the variance in the *X*-*Y* axis. In this model each LED produced 1000 light rays, and these were then binned and plotted in a 2D histogram. Figure 2 shows the variation without a diffuser present. As can be seen, the light forms a regular pattern without the diffusers but with the diffuser variation is dominated by random noise. The Red circle in both images shows the area of interest as this is the maximum size of the wafer. As it can be seen the edge region of the image has a reduced intensity however due to this, they can be discarded in the variation calculation. The distribution of the angle of the light rays is shown on the right hand side of the figure. Figure 3 is a repeat of the simulation but with a diffuser placed 5mm from the LED light source. In this model random noise dominates the distribution of the light and is more uniform This shows that for both systems there is a significant range of light angle. 
+![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/ES50!D.png)
+*Figure 2, 2D Light Intensity Plot (note Figure 38 and Figure 39 use different scales).*
 
-Finally, the light intensity on the wafer was found. The calculations show that with 256 LEDs the intensity is 16.2 mw/cm<sup>2</sup> . This means that this setup can meet the specification for light intensity without the use of a focusing lens
-![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/no%20diffuser.png)
-*Figure 2, Figure 2 shows the regular pattern of light intensity due to the layout of the LED grid* 
+### Effect of Dispalcement 
 
-![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/diffuser.png)
-*Figure 3, Figure 3 shows the random variance of the light due to the diffuser plate* 
+A test of uniformity against displacement to the wafer was Condcuted. The percentage uniformity
+was not used as it is sensitive to the data size which decreases with distance. It was first considered
+to use the Kolmogorov-Smirnov test for uniformity, however it was found that as the dataset was
+so large, any variation from a perfectly uniform distribution resulted in a negative result.
+Instead the coefficient of variance (*Cv*) of the bins was used as in this situation it normalises for data
+size. *Cv* is the ratio of the standard deviation σ and the mean μ as shown in Equation 1.
+
+*Cv= σ/μ  (1)*
+
+The simulation was repeated for distances between 5−150mm as can be seen in Figure 3 in blue.
+Only data in the x dimension was used as the model was expected to be fully symmetrical. For
+distances greater than 1m the light increased uniformity with displacements. For small displacements,
+a local minimum was found at 22mm. This verifies the experimental data from other sources which
+found similar results experimentally [3]. This is the point where the light from adjacent LEDs
+interferes fully.
+
+![Figure 3](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/ESCv.png)
+*Figure 3, Normalised Coefficient of Variance against Distance.*
+
+
+As the uniformity of the model is worse at on the edge regions, *Cv* was also found from a subset of
+the area of interest as shown in green. This showed a lower *Cv* value further away from the
+local minimum.
 
 ### Conclusion
 The model provides a powerful method for validating the uniformity of the light and builds on the hypothesis that a diffuser would be needed to provide a uniform light source. Furthermore, it shows that reducing the distance between the diffuser and LED is beneficial. This suggests that wider angle LEDs would also reduce the variation of light intensity.

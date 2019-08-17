@@ -12,7 +12,7 @@ The project used a form of ray tracing where light rays were modelled as discret
 
 ### 2D model results 
 
-The model was used to find the uniformity in the $xy$ plane. The light rays were sourced from the
+The model was used to find the uniformity in the *xy* plane. The light rays were sourced from the
 LEDs and their location on the wafer was recorded. For these plots approximately 2.5×10<sup>7</sup> data
 points were binned and plotted in a 2D histogram. Figure 38 shows the spread on a wafer at 10mm
 displacement. As can be seen, the light forms a regular intensity pattern. The red circle shows the

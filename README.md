@@ -14,7 +14,7 @@ The project used a form of ray tracing where light rays were modelled as discret
 
 The model was used to find the uniformity in the *xy* plane. The light rays were sourced from the
 LEDs and their location on the wafer was recorded. For these plots approximately 2.5×10<sup>7</sup> data
-points were binned and plotted in a 2D histogram. Figure 38 shows the spread on a wafer at 10mm
+points were binned and plotted in a 2D histogram. Figure 1 shows the spread on a wafer at 10mm
 displacement. As can be seen, the light forms a regular intensity pattern. The red circle shows the
 area of interest as this is the diameter of the largest wafer. At this distance the model was tested
 with a diffuser and improved the uniformity from 83% to 43%
@@ -30,7 +30,7 @@ is due to the increased distribution range increasing the boundary effect and re
 at the edge of the area of interest. Therefore, it was decided to not use a diffuser.
 
 ![Figure 2](https://github.com/evansutcliffe/Design-3-Diffuser-Model/blob/master/ES50!D.png)
-*Figure 2, 2D Light Intensity Plot (note Figure 38 and Figure 39 use different scales).*
+*Figure 2, 2D Light Intensity Plot (note Figure 1 and Figure 2 use different scales).*
 
 ### Effect of Dispalcement 
 

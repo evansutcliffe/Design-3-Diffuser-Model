@@ -6,185 +6,51 @@ Created on Fri Dec 14 11:36:22 2018
 """
 
 import numpy as np 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from scipy import stats
+import plot_data
+import print_uniformity
+import trace_rays
+import light_ray_intensity
+import myconfig
+import time
+
+
 
 # top down view of intensity on a wafer
-# input distance and other variables
+# input distance and other variables in config file
+
+t0 = time.clock()
+
+LED_Grid = np.mgrid[0:LightW:dim_x*1j, 0:LightL:dim_y*1j].reshape(2,-1).T # e.g. 16 x 16 LED grid
+LED_Grid=LED_Grid
+t1=time.clock()
+
+(x,y,ax,ay)=trace_rays.trace_rays(LED_Grid,L,height)
+#myconfig.save_data(x,y,ax,ay)
+t2 = time.clock()
+print("calcuating light wafer intensity (for diffuser)")
+print("")
+light_ray_intensity.intensity(x,y,ax,ay)   
 
 
+t3 = time.clock()
+x , y = np.array(x), np.array(y)
+ax,ay  = np.array(ax)*180/np.pi, np.array(ay)*180/np.pi
 
-## variables you can change 
-LightW,LightL= 178, 178 # size of lightsource 
-width,length = 178, 178 # size of mask 
-L = 1 # distance between LED and diffuser
-height = 50 # distance between LEDs and wafer
-LED_intensity = 40 #  mw per LED
-transmission = 0.6 # diffuser transmission
-LED_angle = 30 # angle of LED beam (assumed 2 sd) 
-diffuser_angle = 30 # angle of diffuser (assumed 2 sd) 
-max_allowable_angle=(10*np.pi/180) # degrees, max allowable optical angle
+print_uniformity.print_uniformity(x)
 
-use_diffuser = 1
-intensity = 0
-use_angle_filter= 0# calculate the final intensity after using a optical angle filter
-plot=1
-##
+t4 = time.clock()
+print("plotting graphs")
+print("")
+plot_data.plot_data(x,y,ax,ay)
 
-## simulation parameters
-rep =10000 # light rays per LED
-nbins = 1000 # bins for 2d hist
-histbin = 1000 #bins for angle hist
-##
+t5 = time.clock()
 
 
-cood_xy = np.mgrid[0:LightW:16j, 0:LightL:16j].reshape(2,-1).T #hardcoded for 16 x 16 LED grid
-cood_diffuser =[]
-cood_wafer =[]
-
-if (use_diffuser):
-    distance = L
-    print("calcuating diffuser scatter")
-else:
-    distance = height 
-    print("calcuating scatter")
-  
-    
-mu, sigma = 0, LED_angle/2*(np.pi/180) # mean and standard deviation
-for LED in cood_xy:
-    x,y = LED[0],LED[1] # xy coordinates in a topdown view
-    thetax = np.random.normal(mu, sigma, rep)
-    x = x + distance*(np.tan(thetax))
-    thetay = np.random.normal(mu, sigma, rep)
-    y =y + distance*(np.tan(thetay))
-    for i in range(rep):
-        if (x[i]>0 and x[i] < length and (y[i]>0 and y[i] < width)):
-            cood_diffuser.append((x[i],y[i],thetax[i],thetay[i])) 
-            # if light ray outside of diffuser/wafer boundary then disgard
-                           
-if (use_diffuser):
-    angle=[]
-    distance = height - L;     
-    mu, sigma = 0, diffuser_angle/2*(np.pi/180) # assumed normal distribution of light?
-    random_theta = np.random.normal(mu, sigma, len(cood_diffuser)*2) # random values for x,y
-    for i in range(len(cood_diffuser)):
-        (x, y, thetax,thetay), dtx, dty  = cood_diffuser[i], random_theta[i], random_theta[i+len(cood_diffuser)]
-        x = x + distance*(np.tan(thetax+dtx))
-        y = y + distance*(np.tan(thetay+dty))        
-        if (x>0 and x < length and (y>0 and y < width)):
-            cood_wafer.append((x,y,(thetax+dtx),(thetay+dty)))
-        
-if (intensity):
-    print("calcuating light wafer intensity (for diffuser)")
-    light_ray_list=[]
-    x_list=[]
-    if (use_diffuser):
-        wafer = cood_wafer
-    else:
-        wafer = cood_diffuser
-
-        print("")
-    ray_list=0
-    angle_count=0
-    for x,y,thetax,thetay in wafer:
-        if ((x-89)*(x-89)+(y-89)*(y-89)<(76.2*76.2)):
-            ray_list=ray_list+1
-            if(use_angle_filter and (thetax <max_allowable_angle) and (thetay < max_allowable_angle)):
-                angle_count=angle_count+1
-    if(use_diffuser):
-        losses=transmission
-    else:
-        losses=1  
-    if (use_angle_filter):
-        ray_count=angle_count
-    else:
-        ray_count=ray_list
-
-    light_ray_intensity = (LED_intensity/rep)*ray_count*losses/(np.pi*(7.62*7.62)) 
-    print(light_ray_intensity,'mw/cm^2')
-    
-#    x,y = zip(*light_ray_list)
-#    x = np.array(x)
-#    y = np.array(y)
-#    fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
-#    counts, xedges, yedges, im = axes[0].hist2d(x, y, bins=nbins, cmap=plt.cm.BuGn_r)
-#    j=np.mean(counts)
-#    k=np.std(counts)
-#    print(j)
-#    print(k)
-#    print(stats.kstest(x, 'uniform'))
-
-
-
-    
-
-if (use_diffuser):
-    x,y,thetax,thetay = zip(*cood_wafer)
-    
-else:
-    x, y, thetax,thetay = zip(*cood_diffuser) 
-    
-x = np.array(x)
-y = np.array(y)
-ax = np.array(thetax)*180/np.pi
-ay = np.array(thetay)*180/np.pi
-
-if (1):  
-    
-    print("calculating uniformity")
-    
-    ## Uniformity tests
-    
-    x1 = x[x < 153] # take subset inside circle 
-    x1 =x1[x1 > 25]
-       
-    k=np.histogram(x1,bins=100)
-    sd_error=((np.max(k[0])-np.mean((k[0])))/np.mean(k[0])*100) # standard error
-    print("Standard Error = {} ".format(round(sd_error, 4)))
-    std = np.std(k[0])/np.mean(k[0])
-        
-
-##
-   
-
-if (plot):
-    print("plotting graphs")
-
-    # Create a figure with 2 plot areas
-    fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
-    mpl.rcParams.update({'font.size': 22})
-    font = {'family' : 'normal',
-            'weight' : 'bold',
-            'size'   : 22}
-    
-    circle1 = plt.Circle((89, 89), 76.2, color='red',fill=False,linewidth=4.0)
-
-    
-    axes[0].set_title('2D Histogram')
-    counts, xedges, yedges, im = axes[0].hist2d(x, y, bins=nbins, cmap=plt.cm.BuGn_r)
-    #print(counts)
-    plt.colorbar(im, ax=axes[0])
-    axes[0].set_xlabel("X distance (mm)")
-    axes[0].set_ylabel("Y distance (mm)")
-    axes[0].add_artist(circle1)
-    
-    axes[1].hist(np.abs(np.concatenate([ax, ay])), bins=histbin)
-    axes[1].set_ylabel("Relative Intensity")
-    axes[1].set_xlabel("Angle ($\degree$)")
-    
-    
-#    plt.figure(figsize=(16,10))
-#    #plt.hist(x1, bins=100)
-#    plt.hist2d(ax, ay, bins=nbins, cmap=plt.cm.BuGn_r)
-#    #print(stats.kstest(x, stats.uniform(loc=0.0, scale=178).cdf))
-#    plt.xlabel('X Angle ($\degree$)')
-#    plt.ylabel('Y Angle $\degree$')
-#    plt.grid(True)
-#    plt.axis((-75,75,-75,75))
-#    plt.colorbar()
-    
-
+print("setup:"+str((t1-t0)*1000)+"ms")
+print("calc rays:"+str((t2-t1)*1000)+"ms")
+print("calc intensitiy:"+str((t3-t2)*1000)+"ms")
+print("calc statistics:"+str((t4-t3)*1000)+"ms")
+print("plot:"+str((t5-t4)*1000)+"ms")
 
 
 

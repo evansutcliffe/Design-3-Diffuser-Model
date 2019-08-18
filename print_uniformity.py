@@ -14,9 +14,9 @@ def print_uniformity(x):
     ## Uniformity tests
     
     x1 = x[x < 153] # take subset inside circle 
-    x1 =x1[x1 > 25]
+    x2 =x1[x1 > 25]
        
-    k=np.histogram(x1,bins=100)
+    k=np.histogram(x2,bins=100)
     sd_error=((np.max(k[0])-np.mean((k[0])))/np.mean(k[0])*100) # standard error
     print("Standard Error = {} ".format(round(sd_error, 4)))
     std = np.std(k[0])/np.mean(k[0])

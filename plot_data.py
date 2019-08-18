@@ -2,20 +2,19 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+from myconfig import *
 
 
-def plot_data(x,y,ax,ay,nbins,histbin):
-    
-    print("plotting graphs")
-
+def plot_data(x,y,ax,ay): 
     # Create a figure with 2 plot areas
     fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
     mpl.rcParams.update({'font.size': 22})
     font = {'family' : 'normal',
             'weight' : 'bold',
             'size'   : 22}
-    
-    circle1 = plt.Circle((89, 89), 76.2, color='red',fill=False,linewidth=4.0)
+    midpoint_x=LightL/2
+    midpoint_y=LightW/2
+    circle1 = plt.Circle((midpoint_x, midpoint_y), waferR, color='red',fill=False,linewidth=4.0)
 
     
     axes[0].set_title('2D Histogram')

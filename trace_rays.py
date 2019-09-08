@@ -40,7 +40,7 @@ def first_step(LED_Grid,distance):
         x = x_pos + distance*(np.tan(thetax))
         thetay = np.random.normal(mu, sigma, rep)
         y =y_pos + distance*(np.tan(thetay))
-        for x1,y1,dx,dy in zip(x,y,thetax,thetax):
+        for x1,y1,dx,dy in zip(x,y,thetax,thetay):
             if (x1>0 and x1 < length and (y1>0 and y1 < width)):
                 x_full.append(x1)
                 y_full.append(y1)

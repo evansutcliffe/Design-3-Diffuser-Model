@@ -5,13 +5,14 @@ import numpy as np
 from myconfig import *
 
 
-def plot_data(x,y,ax,ay): 
+def plot_data(data): 
     # Create a figure with 2 plot areas
+    x,y,ax,ay = data[:,0],data[:,1],data[:,2],data[:,3]
     fig, axes = plt.subplots(ncols=2, nrows=1, figsize=(30, 10))
     mpl.rcParams.update({'font.size': 22})
-    font = {'family' : 'normal',
-            'weight' : 'bold',
-            'size'   : 22}
+    #font = {'family' : 'normal',
+    #        'weight' : 'bold',
+    #        'size'   : 22}
     midpoint_x=LightL/2
     midpoint_y=LightW/2
     circle1 = plt.Circle((midpoint_x, midpoint_y), waferR, color='red',fill=False,linewidth=4.0)

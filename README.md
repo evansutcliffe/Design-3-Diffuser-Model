@@ -34,8 +34,8 @@ at the edge of the area of interest. Therefore, it was decided to not use a diff
 
 ### Effect of Dispalcement 
 
-A test of uniformity against displacement to the wafer was Condcuted. The percentage uniformity
-was not used as it is sensitive to the data size which decreases with distance. It was first considered
+A test of uniformity against displacement to the wafer was conducted. The percentage uniformity
+was not used as a validation method as it's value varied with data size, which due to losses, decreases with distance. It was first considered
 to use the Kolmogorov-Smirnov test for uniformity, however it was found that as the dataset was
 so large, any variation from a perfectly uniform distribution resulted in a negative result.
 Instead the coefficient of variance (*Cv*) of the bins was used as in this situation it normalises for data
